@@ -1,0 +1,35 @@
+name: build & publish Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: configure Docker to use buildx
+      uses: docker/setup-buildx-action@v3
+    - name: log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+    - name: build Docker image & push to Docker Hub
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          docker.io/derhuerst/gpsd-docker
+        # https://docs.docker.com/build/ci/github-actions/examples/#github-cache
+        cache-from: type=gha
+        cache-to: type=gha,mode=max,oci-mediatypes=true,compression=zstd
