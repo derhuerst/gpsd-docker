@@ -5,7 +5,10 @@
 ## Usage
 
 ```sh
-docker run --rm -v $PWD/out:/app/out --env-file .env x2gbfs -p deer -b 'file:out' -i 30
+docker run --rm \
+	-v $PWD/gpsd.sock:/var/run/gpsd.sock \
+	docker.io/derhuerst/gpsd-docker \
+	'tcp://127.0.0.1:11123'
 ```
 
 ## Similar projects
